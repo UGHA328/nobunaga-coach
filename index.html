@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>노부나가 편성 코치</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--txt:#e6e8ee;--muted:#9aa3b2;--accent:#d9a441;--accent2:#5b8def;--red:#e0574b;--green:#4cae7a;--purple:#9a7bd8;--blue:#5b8def;--orange:#e08a3c}
+  :root[data-theme="light"]{--bg:#f5f4f0;--panel:#fff;--panel2:#f0efe9;--line:#e2ddd2;--txt:#1d2129;--muted:#6b7280}
+  :root[data-theme="sepia"]{--bg:#f4ecd8;--panel:#fbf5e6;--panel2:#efe4cc;--line:#ddcba8;--txt:#3b2f1e;--muted:#8a785a;--accent:#b07a2e;--accent2:#7a5c3a;--green:#5a7d3a;--purple:#8a6d3a}
+  :root[data-theme="blue"]{--bg:#0b1220;--panel:#121a2b;--panel2:#172236;--line:#263349;--txt:#e6ecf5;--muted:#8fa0bd;--accent:#4ea1ff;--accent2:#6cc0ff}
+  @media (prefers-color-scheme:light){:root:not([data-theme]){--bg:#f5f4f0;--panel:#fff;--panel2:#f0efe9;--line:#e2ddd2;--txt:#1d2129;--muted:#6b7280}}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto;padding:16px}h1{font-size:20px;margin:0 0 2px}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+  .card h2{font-size:15px;margin:0 0 10px}
+  label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+  input,select,textarea,button{font-family:inherit;font-size:14px}
+  input[type=text],select,textarea{width:100%;background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:9px 10px;outline:none}
+  textarea{resize:vertical;min-height:60px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>div{flex:1;min-width:130px}
+  button{cursor:pointer;border:none;border-radius:8px;padding:10px 16px;font-weight:700}
+  .btn-primary{background:var(--accent);color:#1a1200}.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+  .btn-ghost{background:var(--panel2);color:var(--txt);border:1px solid var(--line);font-weight:600}
+  .chk{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--txt)}.chk input{width:auto}
+  .legion{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel2)}
+  .legion-title{font-weight:800;font-size:14px;margin-bottom:8px}
+  .units{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}@media(max-width:640px){.units{grid-template-columns:1fr}}
+  .unit{border:1px solid var(--line);border-radius:8px;padding:7px;background:var(--panel)}
+  .unit .u-label{font-size:11px;color:var(--muted);margin-bottom:5px}
+  .slot{margin-bottom:6px}.slot select{margin-bottom:2px;padding:6px 7px;font-size:12.5px}.slot select.jusang{border-color:var(--accent2)}
+  .ownchk{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)}.ownchk input{width:auto;margin:0}
+  .pill{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700}
+  .p-기병{background:rgba(224,138,60,.18);color:var(--orange)}.p-총포{background:rgba(154,123,216,.18);color:var(--purple)}.p-창병{background:rgba(91,141,239,.18);color:var(--blue)}.p-닌자{background:rgba(76,174,122,.18);color:var(--green)}
+  .legtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+  .legtab{background:var(--panel2);border:1px solid var(--line);color:var(--muted);border-radius:20px;padding:6px 12px;font-weight:700;font-size:13px}
+  .legtab.on{background:var(--accent);color:#1a1200;border-color:var(--accent)}
+  .zones{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .dz{border:2px dashed var(--line);border-radius:8px;padding:12px;text-align:center;color:var(--muted);cursor:pointer;background:var(--panel2);font-size:12px}.dz.over{border-color:var(--accent);color:var(--accent)}
+  .th{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.thumb{position:relative}.thumb img{height:78px;border-radius:6px;border:1px solid var(--line);display:block}
+  .thumb .x{position:absolute;top:-7px;right:-7px;background:var(--red);color:#fff;border-radius:50%;width:20px;height:20px;line-height:18px;text-align:center;font-size:12px;cursor:pointer;border:2px solid var(--panel)}
+  .guide{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+  .g-item{border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--panel2);font-size:12.5px}.g-item .n{font-weight:800;color:var(--accent);margin-bottom:4px}
+  #chat{max-height:620px;overflow-y:auto}.bubble{border-radius:10px;padding:10px 12px;margin:8px 0}
+  .bubble.user{background:var(--panel2);border:1px solid var(--line);font-size:13.5px;color:var(--muted)}.bubble.ai{background:var(--panel2);border:1px solid var(--accent2)}
+  .ai-body{overflow-x:auto}.ai-body h1,.ai-body h2{font-size:16px;margin:14px 0 8px}.ai-body h3{font-size:15px;margin:12px 0 6px;color:var(--accent)}
+  .ai-body ul,.ai-body ol{margin:6px 0 6px 20px;padding:0}.ai-body li{margin:3px 0}.ai-body p{margin:6px 0}.ai-body strong{color:var(--txt)}
+  .ai-body table{border-collapse:collapse;margin:8px 0;font-size:13px;width:100%}.ai-body th,.ai-body td{border:1px solid var(--line);padding:5px 8px;text-align:left}.ai-body th{background:var(--panel)}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px}.note{font-size:12px;color:var(--green);margin-top:6px}
+  .spinner{display:inline-block;width:15px;height:15px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes spin{to{transform:rotate(360deg)}}
+  a{color:var(--accent2)}
+  .rules{font-size:13px;line-height:1.85}.rules b{color:var(--accent)}.rules .r{margin:7px 0;padding-left:18px;position:relative}.rules .r::before{content:"▸";position:absolute;left:0;color:var(--accent2)}
+  .dbfilters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.dbfilters input{flex:2;min-width:150px}.dbfilters select{flex:1;min-width:100px}
+  #dbWrap{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+  #dbTable{border-collapse:collapse;font-size:12px;width:100%}#dbTable th,#dbTable td{border:1px solid var(--line);padding:4px 7px;text-align:left;vertical-align:top;white-space:nowrap}
+  #dbTable td.wrap{white-space:normal;min-width:170px}#dbTable th{background:var(--panel2);position:sticky;top:0;z-index:1}
+  .muted{color:var(--muted);font-size:11px}.tagY{color:var(--green);font-weight:700}.tagN{color:var(--muted)}
+  summary.fold{cursor:pointer;font-size:15px;font-weight:700;list-style:none;outline:none}
+  summary.fold::-webkit-details-marker{display:none}
+  summary.fold::before{content:"▸ ";color:var(--accent2)}
+  details[open] summary.fold::before{content:"▾ "}
+</style>
+</head>
+<body><div class="wrap">
+<h1 data-i18n="appTitle"></h1>
+<div class="sub" data-i18n="appSub"></div>
+
+<div class="card"><h2 data-i18n="setTitle"></h2>
+  <div class="row">
+    <div><label data-i18n="langLabel"></label><select id="langSel"><option value="ko">한국어</option><option value="en">English</option><option value="zh">中文</option></select></div>
+    <div><label data-i18n="themeLabel"></label><select id="themeSel"><option value="auto" data-i18n="thAuto"></option><option value="dark" data-i18n="thDark"></option><option value="light" data-i18n="thLight"></option><option value="sepia" data-i18n="thSepia"></option><option value="blue" data-i18n="thBlue"></option></select></div>
+    <div><label data-i18n="modelLabel"></label><select id="model"><option value="gemini-flash-latest">gemini-flash-latest</option><option value="gemini-3.5-flash">gemini-3.5-flash</option><option value="gemini-pro-latest">gemini-pro-latest</option><option value="gemini-flash-lite-latest">gemini-flash-lite-latest</option></select></div>
+  </div>
+  <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
+    <label class="chk"><input type="checkbox" id="ocr"> <span data-i18n="ocrLabel"></span></label>
+    <label class="chk"><input type="checkbox" id="autoadd" checked> <span data-i18n="autoaddLabel"></span></label>
+  </div>
+  <div class="hint" data-i18n="keyNote"></div>
+</div>
+
+<div class="card"><h2 data-i18n="legTitle"></h2><div class="hint" data-i18n="legHint" style="margin:-4px 0 8px"></div><div id="legTabs" class="legtabs"></div><div id="legions"></div><button class="btn-ghost" id="resetBtn" data-i18n="resetBtn" style="margin-top:10px"></button></div>
+
+<div class="card"><h2 data-i18n="optTitle"></h2>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+    <div style="flex:1;min-width:120px"><label data-i18n="byLabel"></label><select id="optBy"><option value="기병" data-i18n="c기병"></option><option value="총포" data-i18n="c총포"></option><option value="창병" data-i18n="c창병"></option><option value="닌자" data-i18n="c닌자"></option></select></div>
+    <button class="btn-primary" id="optBtn" data-i18n="optBtn"></button>
+  </div>
+  <div class="hint" data-i18n="optHint"></div>
+</div>
+
+<div class="card"><h2 data-i18n="qTitle"></h2>
+  <div class="row" style="margin-bottom:10px">
+    <div><label data-i18n="targetLabel"></label><select id="target"></select></div>
+    <div><label data-i18n="candLabel"></label><select id="cand"></select></div>
+  </div>
+  <div id="newGenBox" style="display:none">
+    <div class="hint" data-i18n="newHint" style="margin-bottom:6px"></div>
+    <div class="zones">
+      <div><label data-i18n="z1"></label><div class="dz" id="dz-기본">📷<input type="file" id="fi-기본" accept="image/*" multiple hidden></div><div class="th" id="th-기본"></div></div>
+      <div><label data-i18n="z2"></label><div class="dz" id="dz-스킬">📷<input type="file" id="fi-스킬" accept="image/*" multiple hidden></div><div class="th" id="th-스킬"></div></div>
+      <div><label data-i18n="z3"></label><div class="dz" id="dz-전무">📷<input type="file" id="fi-전무" accept="image/*" multiple hidden></div><div class="th" id="th-전무"></div></div>
+    </div>
+  </div>
+  <div style="margin-top:10px"><label data-i18n="qLabel"></label><textarea id="q"></textarea></div>
+  <div style="margin-top:10px"><button class="btn-primary" id="askBtn" data-i18n="askBtn"></button></div>
+  <div id="addNote"></div>
+</div>
+
+<div class="card"><h2 data-i18n="guideTitle"></h2>
+  <div class="guide">
+    <div class="g-item"><div class="n" data-i18n="g1t"></div><span data-i18n="g1d"></span></div>
+    <div class="g-item"><div class="n" data-i18n="g2t"></div><span data-i18n="g2d"></span></div>
+    <div class="g-item"><div class="n" data-i18n="g3t"></div><span data-i18n="g3d"></span></div>
+    <div class="g-item"><div class="n" data-i18n="g4t"></div><span data-i18n="g4d"></span></div>
+  </div>
+  <div class="hint" data-i18n="guideHint"></div>
+</div>
+
+<div class="card"><h2 data-i18n="chatTitle"></h2><div id="chat"></div>
+  <div id="followRow" style="display:none;margin-top:12px"><label data-i18n="followLabel"></label><div style="display:flex;gap:8px"><input type="text" id="followInput"><button class="btn-primary" id="followBtn" data-i18n="sendBtn" style="white-space:nowrap"></button></div></div>
+</div>
+
+<div class="card"><details><summary class="fold" data-i18n="rulesTitle"></summary><div class="rules" style="margin-top:10px">
+  <div class="r" data-i18n="r1"></div><div class="r" data-i18n="r2"></div><div class="r" data-i18n="r3"></div><div class="r" data-i18n="r4"></div><div class="r" data-i18n="r5"></div><div class="r" data-i18n="r6"></div>
+</div></details></div>
+
+<div class="card"><h2><span data-i18n="dbTitle"></span> <span class="hint" style="font-weight:400">(<span id="dbCount">59</span>)</span></h2>
+  <div class="dbfilters">
+    <input type="text" id="dbSearch" data-i18n-ph="dbSearchPh">
+    <select id="dbRole"><option value="" data-i18n="roleAll"></option><option value="주장" data-i18n="jusang"></option><option value="부장" data-i18n="busang"></option></select>
+    <select id="dbByeong"><option value="" data-i18n="byAll"></option><option value="기병" data-i18n="c기병"></option><option value="총포" data-i18n="c총포"></option><option value="창병" data-i18n="c창병"></option><option value="닌자" data-i18n="c닌자"></option></select>
+    <select id="dbSort"><option value="번호" data-i18n="sortNo"></option><option value="통솔">LDR↓</option><option value="무용">VAL↓</option><option value="지략">INT↓</option><option value="속도">SPD↓</option><option value="정치">POL↓</option></select>
+  </div>
+  <div id="dbWrap"><table id="dbTable"></table></div>
+</div>
+</div>
+
+<script>
+const BASE_G=[
+{번호:1,이름:"도요토미 히데나가",역할:"부장",특성:"통재",병종:"",통솔:306,무용:282,지략:260,속도:282,정치:298,스킬:"자비로운 맹장",스킬효과:"아군 치유↑·적 치유↓·아군 피해증감버프",무기:"히데나가의 문서",무기효과:"아군군단 통솔7%↑·무용딜후 지략/무용딜3%↑",전보:""},
+{번호:2,이름:"모리 카츠나가",역할:"부장",특성:"통재",병종:"",통솔:277,무용:304,지략:260,속도:279,정치:193,스킬:"오사카 제일의 용장",스킬효과:"자부대 버프·방패·무용후 저항·추격",무기:"백사위 물소 투구",무기효과:"홀수R초 80% 적2부대 방패상쇄30%↓",전보:"오사카제일의용장 고빈도(29회)6725딜, 상위팀14628딜 — 안정적 무용딜러"},
+{번호:3,이름:"오니니와 츠나모토",역할:"부장",특성:"통재",병종:"",통솔:298,무용:271,지략:284,속도:284,정치:246,스킬:"덕량관대",스킬효과:"아군 제어제거·버프/방패관통/적 디버프",무기:"중백 조모 창",무기효과:"짝수R준비 통솔최고 적2부대 통솔25%↓·피격시 지략피해(90%)",전보:"덕량관대12회 제어제거 유틸"},
+{번호:4,이름:"마츠다이라 키요야스",역할:"부장",특성:"통재",병종:"",통솔:271,무용:272,지략:313,속도:284,정치:277,스킬:"충성의 잔",스킬효과:"첫3R 통솔·치유↑/최고지략 버프·적 직격↓",무기:"키요야스의 시루완",무기효과:"매R초 70% 아군군단 지략피해6%↑(중첩)",전보:""},
+{번호:5,이름:"유키 하루토모",역할:"부장",특성:"통재",병종:"",통솔:309,무용:291,지략:249,속도:282,정치:193,스킬:"기략종횡",스킬효과:"아군 피해↓·적 연타제거·직격/추격피해↓",무기:"오테기네의 창",무기효과:"방패획득시 75% 아군2부대 받는무용피해8%↓",전보:"기략종횡14회 유틸, 직접딜낮음(~1220)"},
+{번호:6,이름:"이케다 카츠마사",역할:"부장",특성:"통재",병종:"",통솔:253,무용:302,지략:293,속도:282,정치:179,스킬:"매복의 후군",스킬효과:"아군 피해↓·매복 적피해↓·후속R 피해",무기:"저항의 기치",무기효과:"주동딜시 85% 매복부대 받는무용피해8%↓",전보:""},
+{번호:7,이름:"우키타 히데이에",역할:"주장",특성:"지략",병종:"닌자",통솔:275,무용:253,지략:298,속도:275,정치:254,스킬:"역경의 꽃",스킬효과:"적 작열·자부대 가드↑·분노도달시 추가",무기:"토리카이 쿠니츠구",무기효과:"매R초 80% 적1부대 도발",전보:""},
+{번호:8,이름:"시마즈 이에히사",역할:"부장",특성:"통재",병종:"",통솔:288,무용:309,지략:282,속도:293,정치:213,스킬:"츠리노부세",스킬효과:"적 통솔·속도↓·다단피해",무기:"오키타나와테의 총",무기효과:"즉시피해조성시 조성피해5%↑(최대10)",전보:""},
+{번호:9,이름:"시마즈 요시히로",역할:"주장",특성:"지략",병종:"총포",통솔:277,무용:298,지략:309,속도:293,정치:243,스킬:"오니 시마즈",스킬효과:"주동피해시 추가·열광시 강화",무기:"묘신의 갑옷",무기효과:"초반2R 자부대 받는피해40%↓",전보:""},
+{번호:10,이름:"아자이 고",역할:"부장",특성:"통재",병종:"",통솔:298,무용:227,지략:298,속도:272,정치:264,스킬:"영고성쇠",스킬효과:"1R경계↑·고병력적 피해↓·아군 병력회복",무기:"승원원의 우치카게",무기효과:"3R부터 병력65%미만 적에 피해25%↑",전보:""},
+{번호:11,이름:"고토 마타베에",역할:"부장",특성:"통재",병종:"",통솔:275,무용:298,지략:253,속도:275,정치:160,스킬:"마타베의 창",스킬효과:"1R 적 대량피해·패주 적 추가",무기:"역전의 갑주",무기효과:"3R초 주동딜시 적1부대 패주(55%)·R당2회",전보:"마타베의창1727(저조) — 패주세팅 의존"},
+{번호:12,이름:"이자카 네코",역할:"부장",특성:"통재",병종:"",통솔:293,무용:288,지략:271,속도:284,정치:260,스킬:"네코고젠",스킬효과:"1R 대량 피해감소버프·추격시 추가",무기:"네코고젠 우치카케",무기효과:"첫2R 적 총포 주동피해20%↓·적 기병 추격피해25%↓",전보:"네코고젠 초반 피해감소버프(4회) — 유틸"},
+{번호:13,이름:"하라 토라타네",역할:"부장",특성:"통재",병종:"",통솔:265,무용:275,지략:298,속도:279,정치:143,스킬:"야차 미노",스킬효과:"적 작열시 아군버프·적 작열 앞당김",무기:"오니미노의 나기나타",무기효과:"자부대 입는피해15%↓·적 작열시75% 아군버프",전보:""},
+{번호:14,이름:"오타 규이치",역할:"부장",특성:"통재",병종:"",통솔:272,무용:265,지략:316,속도:284,정치:268,스킬:"필우연탄",스킬효과:"적 속박·반격저지·지략피해시 추가",무기:"신장공기",무기효과:"자부대 주동딜10%↑·매R준비50% 적 통솔최고 통솔/무용 탈취",전보:""},
+{번호:15,이름:"마츠다이라 센",역할:"부장",특성:"통재",병종:"",통솔:288,무용:277,지략:265,속도:277,정치:253,스킬:"오오루의 어위광",스킬효과:"적 패주연장·패주피해↑·패주 적 디버프",무기:"칸제 마사무네",무기효과:"초3R 받는피해35%↓/4R부터 가하는피해25%↑",전보:""},
+{번호:16,이름:"가라샤",역할:"부장",특성:"통재",병종:"",통솔:279,무용:249,지략:313,속도:279,정치:288,스킬:"번화의 기도",스킬효과:"아군 가드·적 피격후 디버프·후반 아군버프",무기:"피 묻은 고소데",무기효과:"첫3R 아군1부대 저항1스택·50% 추가저항",전보:""},
+{번호:17,이름:"츠가루 타메노부",역할:"주장",특성:"지략",병종:"창병",통솔:304,무용:282,지략:295,속도:293,정치:284,스킬:"독립의 츠가루",스킬효과:"적 도발·전가 시전",무기:"불제우천지인",무기효과:"주장 주동발동율10%↑·매R종료 자부대 병력회복(110%)",전보:""},
+{번호:18,이름:"모리 란마루",역할:"부장",특성:"통재",병종:"",통솔:279,무용:293,지략:284,속도:284,정치:288,스킬:"일심",스킬효과:"홀수R 지략피해↑·짝수R 무용피해↑",무기:"충의의 칼날",무기효과:"1R초 75% 적 무용최고2부대 무용50%↓",전보:""},
+{번호:19,이름:"이마가와 요시모토",역할:"주장",특성:"무용",병종:"창병",통솔:304,무용:282,지략:288,속도:291,정치:298,스킬:"동해 지배자",스킬효과:"적 패주·아군 디버프제거·병력회복",무기:"명문의 직의",무기효과:"자부대 주동딜25%↑·매R준비75% 적2부대 지속피해5%↑",전보:""},
+{번호:20,이름:"도쿠히메",역할:"부장",특성:"통재",병종:"",통솔:298,무용:253,지략:271,속도:272,정치:293,스킬:"하리마고젠",스킬효과:"자신 속도↑·적 속도↓·무작위 제어",무기:"어전의 영광",무기효과:"R당1회 지략피해시 적1부대 무용/통솔15% 탈취",전보:""},
+{번호:21,이름:"후마 코타로",역할:"주장",특성:"지략",병종:"닌자",통솔:293,무용:282,지략:316,속도:295,정치:143,스킬:"야행자",스킬효과:"아군 군단 가드↑·치유",무기:"귀면의 그림자",무기효과:"매R준비60% 적 속도최고 지연·무용/지략최고15%↓",전보:""},
+{번호:22,이름:"아자이 하츠",역할:"부장",특성:"통재",병종:"",통솔:288,무용:265,지략:299,속도:284,정치:298,스킬:"신비의 노래",스킬효과:"통솔↑·병력 재분배·회복",무기:"명문의 부채",무기효과:"전투전 아군군단 치유36%↑·받는피해20%↓",전보:""},
+{번호:23,이름:"사부로 노부나가",역할:"주장",특성:"지략",병종:"총포",통솔:299,무용:306,지략:293,속도:299,정치:295,스킬:"허실 상생",스킬효과:"홀수R 지략+동요/짝수R 무용+위압·겁박",무기:"부동행광",무기효과:"포탄딜·매포탄 적 무용피해(60%)·위압/겁박",전보:""},
+{번호:24,이름:"오우치 요시타카",역할:"주장",특성:"지략",병종:"창병",통솔:293,무용:249,지략:286,속도:275,정치:268,스킬:"말세의 도자",스킬효과:"주동피해↑·통솔↑·적 무용/지략최고에 피해",무기:"남위견적위 갑주",무기효과:"매R준비40% 자부대 다음2회 회심/기모 발동",전보:""},
+{번호:25,이름:"사이토 도산",역할:"주장",특성:"지략",병종:"닌자",통솔:293,무용:261,지략:313,속도:288,정치:275,스킬:"미노의 살무사",스킬효과:"적 군단 지략피해+작열",무기:"기름장수 하오리",무기효과:"매R후반50% 적1부대 작열·지략피해(50%)",전보:""},
+{번호:26,이름:"다케다 신겐",역할:"주장",특성:"무용",병종:"기병",통솔:316,무용:288,지략:302,속도:302,정치:309,스킬:"풍림화산",스킬효과:"아군 연타 획득",무기:"풍림화산의 군배",무기효과:"홀수R준비 아군부대 질주획득(해제불가)",전보:"풍림화산 자체딜은작으나 연타부여로 팀 일반공격 폭증 엔진 — 직접딜 과소평가주의"},
+{번호:27,이름:"타치바나 무네시게",역할:"주장",특성:"무용",병종:"기병",통솔:302,무용:310,지략:272,속도:295,정치:231,스킬:"즈이헨류",스킬효과:"아군 피해↑·무용피해 조성",무기:"니지 쿠니토시",무기효과:"매R준비 자부대 무용5%↑·아군군단 받는피해5%↓",전보:""},
+{번호:28,이름:"레이쇼인",역할:"부장",특성:"통재",병종:"",통솔:265,무용:249,지략:306,속도:272,정치:238,스킬:"정춘니",스킬효과:"자부대 지략·지략피해↑",무기:"스루가의 부채",무기효과:"홀수R 작열 적부대 통솔10%·지략/무용7% 탈취",전보:""},
+{번호:29,이름:"카타쿠라 코쥬로",역할:"부장",특성:"통재",병종:"",통솔:286,무용:264,지략:298,속도:282,정치:284,스킬:"흑조종",스킬효과:"아군 피해분담·자부대 치유",무기:"신부팔일월 가부토",무기효과:"불굴시 아군군단 받는피해40%↓·딜20%↑·치유100%↑",전보:""},
+{번호:30,이름:"코사카 마사노부",역할:"부장",특성:"통재",병종:"",통솔:293,무용:271,지략:284,속도:282,정치:239,스킬:"단죠지용",스킬효과:"아군 잠행/피격시 반격·적 피해↓",무기:"도탄정의 투구",무기효과:"자부대 통솔40%↑·피격후 병력회복(50%)",전보:""},
+{번호:31,이름:"아자이 나가마사",역할:"부장",특성:"통재",병종:"",통솔:277,무용:293,지략:275,속도:282,정치:208,스킬:"오미의 영재",스킬효과:"자부대 무용·추격피해↑·저항·일반후 무용딜",무기:"흑철 감색끈 도마루",무기효과:"매R초 적 무용최고 버프제거+아군 무용최고 디버프해제",전보:""},
+{번호:32,이름:"난부 하루마사",역할:"부장",특성:"통재",병종:"",통솔:286,무용:299,지략:249,속도:291,정치:187,스킬:"만월",스킬효과:"속도 탈취·적 버프제거·조성피해↓",무기:"치미 자웅 태도",무기효과:"일반공격후 35% 대상 위압",전보:""},
+{번호:33,이름:"다테 시게자네",역할:"부장",특성:"통재",병종:"",통솔:304,무용:282,지략:284,속도:288,정치:215,스킬:"영의 대략",스킬효과:"자부대 통솔↑·병력/위압 회복·피해분담",무기:"남만 쇠사슬 투구",무기효과:"자신 치유30%↑·매R종료 병력최저 아군 회복",전보:""},
+{번호:34,이름:"오토모 요시아키",역할:"주장",특성:"지략",병종:"총포",통솔:271,무용:249,지략:302,속도:272,정치:288,스킬:"곧장 전진",스킬효과:"적 무용·지략피해·버프제거·지연",무기:"감련에게 보내는 서한",무기효과:"매R초60% 적1부대 지략피해(100%)+지연",전보:""},
+{번호:35,이름:"사토미 요시타카",역할:"주장",특성:"지략",병종:"닌자",통솔:293,무용:271,지략:298,속도:286,정치:215,스킬:"인자무적",스킬효과:"자부대 공심·가드↑·가드성공후 지략딜·지략/통솔↑",무기:"요아 문답",무기효과:"가드 즉시피해후 피해출처 무용/지략10%↓",전보:""},
+{번호:36,이름:"카이히메",역할:"부장",특성:"통재",병종:"",통솔:279,무용:265,지략:298,속도:279,정치:217,스킬:"동국의 꽃",스킬효과:"주장 주동발동율↑·지속피해적 지략딜",무기:"나미키리",무기효과:"자소속 주장 주동발동율15%↑·자군단 스킬피해5%↓",전보:""},
+{번호:37,이름:"미야모토 무사시",역할:"부장",특성:"통재",병종:"",통솔:293,무용:306,지략:272,속도:291,정치:249,스킬:"니텐이치류",스킬효과:"자부대 무용피해↑·패주 적 추가피해",무기:"무명금중",무기효과:"아군 무용10%↑·적 패주부대시 아군강화",전보:""},
+{번호:38,이름:"사사키 코지로",역할:"부장",특성:"통재",병종:"",통솔:279,무용:286,지략:293,속도:286,정치:193,스킬:"연반",스킬효과:"아군 저항/치료·적 작열/지략피해",무기:"모노호시자오",무기효과:"자부대 통솔20%↑·자부대 지략피해8%↑",전보:""},
+{번호:39,이름:"오타 도칸",역할:"주장",특성:"무용",병종:"기병",통솔:271,무용:298,지략:265,속도:277,정치:268,스킬:"아시가루 병법",스킬효과:"아군 천공·적 저항/가드무시 무용피해",무기:"화월백수",무기효과:"전투준비 아군 무용피해21%↑(해제불가·군단전체)",전보:"아시가루병법 6100~7200 가드무시딜"},
+{번호:40,이름:"이타가키 노부카타",역할:"부장",특성:"통재",병종:"",통솔:298,무용:293,지략:257,속도:282,정치:193,스킬:"초승달의 밤",스킬효과:"R준비 아군저항·추격시 헐값↑/피해↓·아군 병력회복",무기:"잠자리 투구",무기효과:"일반공격후 60% 아군1부대 디버프1제거·R당3회",전보:""},
+{번호:41,이름:"요시히메",역할:"부장",특성:"통재",병종:"",통솔:293,무용:260,지략:284,속도:277,정치:224,스킬:"오우의 귀희",스킬효과:"적 회복/치유약화·아군 피해↓·통솔↑·병력회복",무기:"수제 전투낭",무기효과:"매R초70% 잠금 적부대 무용/지략피해30%↓",전보:""},
+{번호:42,이름:"조소카베 노부치카",역할:"부장",특성:"통재",병종:"",통솔:299,무용:284,지략:265,속도:282,정치:193,스킬:"일부당관",스킬효과:"패주 적피해↑·패주/작열 아군피해↓·디버프해제",무기:"주철 붉은 끈 갑옷",무기효과:"자부대 무용20%↑·매R후반 아군군단 치유25%↑",전보:"일부당관11회 — 패주상대 딜증폭"},
+{번호:43,이름:"사이토 토모노부",역할:"부장",특성:"통재",병종:"",통솔:288,무용:298,지략:249,속도:277,정치:193,스킬:"에치고의 종규",스킬효과:"R준비 신속·속도↑/통솔·무용↑·연타관통",무기:"주석 부채",무기효과:"홀수R초 아군 임의부대 받은공격3회↑시 받는치유10%↑",전보:""},
+{번호:44,이름:"미우라 안진",역할:"부장",특성:"통재",병종:"",통솔:306,무용:254,지략:282,속도:279,정치:193,스킬:"안진 항해술",스킬효과:"적 피해↓·피격후 치유↑·아군 지략/지략딜↑",무기:"단안 망원경",무기효과:"자부대 피격시마다 피해출처 무용/지략10%↓",전보:""},
+{번호:45,이름:"마츠히메",역할:"부장",특성:"통재",병종:"",통솔:293,무용:253,지략:279,속도:275,정치:164,스킬:"영원의 그리움",스킬효과:"적 속도·피해↓·아군 피격피해↓·적 동요",무기:"신쇼인의 견직물",무기효과:"자부대 통솔35%↑·첫3R 적 무용최고 무용 탈취",전보:"영원의그리움5~6회 감속/동요 유틸"},
+{번호:46,이름:"사타케 요시노부",역할:"부장",특성:"통재",병종:"",통솔:271,무용:284,지략:282,속도:277,정치:272,스킬:"귀의 계보",스킬효과:"자부대 함진·피해가할때마다 군단피해↑",무기:"의장의 갑옷",무기효과:"자부대 받는치료25%↑·매R준비 피해상승",전보:""},
+{번호:47,이름:"이소노 카즈마사",역할:"부장",특성:"통재",병종:"",통솔:282,무용:298,지략:271,속도:282,정치:154,스킬:"용맹과 단호",스킬효과:"1R 적직격↓·아군 무용피해↑·연타/추격↑",무기:"십일단 봉지창",무기효과:"아군 도가이6%↑·추격피해시50% 대상 경계3%↓",전보:"용맹과단호1400~4900딜(강팀스케일↑) — 무용딜증폭 확인"},
+{번호:48,이름:"호이다 모토키요",역할:"부장",특성:"통재",병종:"",통솔:295,무용:265,지략:286,속도:282,정치:238,스킬:"네 번째 화살",스킬효과:"자부대 경계·가시갑옷·잠행·가시없으면 적 직격/피해↓",무기:"개명 서장",무기효과:"가드성공시마다 아군1부대 경계3%↑·60% 병력회복",전보:""},
+{번호:49,이름:"오카베 모토노부",역할:"부장",특성:"통재",병종:"",통솔:298,무용:282,지략:261,속도:279,정치:172,스킬:"충의의 연회",스킬효과:"방패시 통솔↑·적 직격↓·피격후 병력회복+방패",무기:"주군의 투구",무기효과:"아군 지연보유시 통솔15%↑·아군군단 받는피해20%↓",전보:"충의의연회 단일전투27507딜+치유(33회) — 관측 부장 최고 딜/지속"},
+{번호:50,이름:"우에스기 가게토라",역할:"주장",특성:"무용",병종:"기병",통솔:298,무용:286,지략:271,속도:284,정치:224,스킬:"수려한 계승자",스킬효과:"피격시 아군버프·적 조롱/도발·고무",무기:"화려한 진바오리",무기효과:"첫3R 자부대 질주획득(해제불가)·위압시 반격",전보:"수려한계승자15회 탱/버프 — 어그로/생존축"},
+{번호:51,이름:"시마즈 타다츠네",역할:"주장",특성:"무용",병종:"총포",통솔:293,무용:275,지략:277,속도:282,정치:227,스킬:"사쓰마 귀총",스킬효과:"적 조롱/도발/지연·피격/주동시 패시브",무기:"시구레의 깃발",무기효과:"아군군단 회심/기모저항5%↑·홀수R 받는피해20%↓",전보:""},
+{번호:52,이름:"도쿠가와 히데타다",역할:"주장",특성:"무용",병종:"창병",통솔:306,무용:291,지략:277,속도:291,정치:271,스킬:"태평성세",스킬효과:"방패강화·아군 회심/기모저항↑·적 조롱/도발/전가",무기:"마사츠네 명문 태도",무기효과:"자부대 피격후 적2부대 받는피해5%↑(3R·중첩)",전보:"태평성세19회 제어/버프 유틸"},
+{번호:53,이름:"호조 우지쓰나",역할:"주장",특성:"지략",병종:"닌자",통솔:286,무용:253,지략:293,속도:277,정치:316,스킬:"고노다이의 결전",스킬효과:"아군 가드↑·적 무용/지략↓·확률적 적 피해",무기:"오조 어서문",무기효과:"매R준비60% 자부대+아군1부대 통솔40%↑",전보:""},
+{번호:54,이름:"아라키 무라시게",역할:"부장",특성:"통재",병종:"",통솔:282,무용:306,지략:253,속도:279,정치:235,스킬:"용성의 각오",스킬효과:"적 속성탈취·적피해량↓·버프/디버프해제",무기:"오오에",무기효과:"1R준비55% 적1부대 위압·일반공격후70% 발동",전보:"용성의각오10회 속성탈취/해제 유틸"},
+{번호:55,이름:"아사노 나가마사",역할:"부장",특성:"통재",병종:"",통솔:299,무용:261,지략:288,속도:282,정치:271,스킬:"번주의 위엄",스킬효과:"R준비 적제어·자부대 가드↑·피격시 치료",무기:"물소 투구",무기효과:"아군 지략최고부대 당부표식·가드성공시 추가",전보:""},
+{번호:56,이름:"오타니 요시츠구",역할:"부장",특성:"통재",병종:"",통솔:295,무용:260,지략:293,속도:282,정치:271,스킬:"자심삼매",스킬효과:"명경/매R후반 적1부대 130%무용딜+디버프추가딜",무기:"없음",무기효과:"",전보:""},
+{번호:57,이름:"야마가타 마사카게",역할:"주장",특성:"무용",병종:"기병",통솔:295,무용:306,지략:282,속도:293,정치:249,스킬:"적비급습",스킬효과:"앞4R 아군 디버프제거+병력회복+격려/적 조롱·도발",무기:"없음",무기효과:"",전보:""},
+{번호:58,이름:"오타 스케마사",역할:"부장",특성:"통재",병종:"",통솔:275,무용:279,지략:298,속도:284,정치:208,스킬:"삼략재 사전",스킬효과:"앞3R 속도/지략부여/매R초 적2부대 180%지략딜",무기:"없음",무기효과:"",전보:""},
+{번호:59,이름:"조소카베 모토치카",역할:"주장",특성:"지략",병종:"창병",통솔:299,무용:284,지략:291,속도:291,정치:284,스킬:"오니 와코",스킬효과:"무용피격때마다 무용/지략딜·조성딜15%↑(최대3중첩)",무기:"없음",무기효과:"",전보:""}
+];
+const DEFAULT_LEGIONS=[
+ {name:"기병 군단",병종:"기병",units:[["다케다 신겐","이소노 카즈마사","미야모토 무사시"],["오타 도칸","시마즈 이에히사","아라키 무라시게"],["타치바나 무네시게","모리 카츠나가","난부 하루마사"]]},
+ {name:"총포 군단",병종:"총포",units:[["사부로 노부나가","오타 규이치","레이쇼인"],["시마즈 요시히로","카이히메","마츠다이라 키요야스"],["오토모 요시아키","미우라 안진","오타 스케마사"]]},
+ {name:"창병 군단",병종:"창병",units:[["이마가와 요시모토","마츠다이라 센","조소카베 노부치카"],["도쿠가와 히데타다","고토 마타베에","오카베 모토노부"],["오우치 요시타카","아자이 고","다테 시게자네"]]},
+ {name:"닌자 군단",병종:"닌자",units:[["사이토 도산","하라 토라타네","사사키 코지로"],["후마 코타로","카타쿠라 코쥬로","아자이 하츠"],["호조 우지쓰나","가라샤","아사노 나가마사"]]}
+];
+const BYICON={기병:"🐎",총포:"🔫",창병:"🗡️",닌자:"🥷"};
+
+/* ===== i18n (UI 크롬) ===== */
+const UI={
+ ko:{appTitle:"⚔️ 노부나가 편성 코치",appSub:"장수 스크린샷을 올리면 Gemini가 편성 조언 · DB에 없으면 자동추가 · 데이터 59명 내장",setTitle:"⚙️ 설정",langLabel:"언어",themeLabel:"테마",modelLabel:"모델",thAuto:"자동",thDark:"다크",thLight:"라이트",thSepia:"세피아(전국풍)",thBlue:"블루",ocrLabel:"🔎 OCR 보조 추출",autoaddLabel:"➕ 새 장수 자동 DB 추가",keyNote:"Gemini 키 내장 · 모델만 선택",legTitle:"🛡️ 현재 편성",legHint:"병종 탭 선택 · 장수/전무 자동저장",resetBtn:"기본 추천 편성으로 초기화",optTitle:"🎯 AI 자동 최적 편성 추천",byLabel:"병종",optBtn:"이 병종 최적 군단 추천",optHint:"규칙+DB 근거로 9인(3부대) 편성 제안",qTitle:"❓ 질문하기",targetLabel:"질문 대상 부대 (선택)",candLabel:"교체(추가) 후보 장수",newHint:"DB에 없는 장수 — 스크린샷으로 추가 (①기본 필수·②③각 1~2장)",z1:"① 기본(능력치)",z2:"② 스킬 상세",z3:"③ 전용무기",qLabel:"질문",askBtn:"🔍 분석하기",qDefault:"이 후보 장수를 위 대상 부대에 넣는 게 좋을까? 넣는다면 누구를 빼고 어떻게 구성해야 해?",guideTitle:"📷 어떤 스크린샷을 올리나요?",g1t:"① 능력치 화면",g1d:"이름·5스탯·스킬요약·전속장비 마름모(빨강=보유/검정=없음)",g2t:"② 스킬 상세",g2d:"스킬 클릭→상세 효과 (길면 2장)",g3t:"③ 전용무기",g3d:"장비 아이콘/ⓘ→무기명·효과 (길면 2장)",g4t:"현재 군단",g4d:"위 '현재 편성'에서 병종 탭→드롭다운으로 장수·전무보유 지정",guideHint:"후보가 DB에 있으면 이름만 선택(스샷 불필요). 없으면 ①기본 필수.",chatTitle:"💬 코치 답변 & 대화",chatEmpty:"분석하기를 누르면 대화가 시작됩니다.",followLabel:"추가 질문 (맥락 유지)",followPh:'예) "왜 그렇게 판단했어?"',sendBtn:"보내기",rulesTitle:"📖 군단 편성 규칙",r1:"<b>군단 = 3부대</b>, <b>1부대 = 주장 1 + 부장 2</b> (총 9명)",r2:"한 군단의 <b>3부대는 모두 같은 병종</b>이어야 시너지가 크다 (병종은 주장이 결정)",r3:"<b>주장 전용 장수는 부장 슬롯에 넣을 수 없다</b> (부장 슬롯=통재형만)",r4:"부장은 어느 병종에든 가능하지만 <b>스킬이 특정 병종에 더 어울린다</b>",r5:"<b>부장 적합 병종은 그 부대 주장의 스킬로 판단</b> (예: 패주 주장→패주 강화 부장)",r6:"<b>무기(전용장비) 시너지</b>, 특히 <b>군단 전체버프</b> 무기 고가치",dbTitle:"📋 장수 DB",dbSearchPh:"이름·스킬·무기 검색",roleAll:"역할 전체",jusang:"주장",busang:"부장",byAll:"병종 전체",sortNo:"번호순",c기병:"기병",c총포:"총포",c창병:"창병",c닌자:"닌자",thinking:"Gemini가 생각 중...",translating:"장수 데이터 번역 중...",thName:"이름",thType:"구분",thSkill:"스킬",thWeapon:"전용무기",thOwn:"무기보유",thNote:"전보",own:"전무보유",yes:"보유",no:"없음",selCand:"— 후보 장수 선택 —",addNew:"➕ 목록에 없음 — 스크린샷으로 추가",tAll:"(대상 미지정 — 전체 고려)",reqPick:"교체 후보를 선택하거나 '목록에 없음'으로 스크린샷을 올리세요.",reqBasic:"신규 장수의 기본(능력치) 스크린샷을 올려주세요.",addedTo:"➕ DB에 추가: ",noRead:"새 장수를 못 읽어 이미지로 판단합니다.",optReq:"🎯 최적 군단 추천 요청",analReq:"분석 요청 · 후보: "},
+ en:{appTitle:"⚔️ Nobunaga Team Coach",appSub:"Upload a general's screenshot → Gemini advises · auto-adds unknowns · 59 generals built-in",setTitle:"⚙️ Settings",langLabel:"Language",themeLabel:"Theme",modelLabel:"Model",thAuto:"Auto",thDark:"Dark",thLight:"Light",thSepia:"Sepia",thBlue:"Blue",ocrLabel:"🔎 OCR assist",autoaddLabel:"➕ Auto-add new general",keyNote:"Gemini key built-in · just pick a model",legTitle:"🛡️ Current Legion",legHint:"Pick class tab · general/weapon auto-saved",resetBtn:"Reset to recommended",optTitle:"🎯 AI Optimal Legion",byLabel:"Class",optBtn:"Recommend legion",optHint:"Proposes a 9-general (3-unit) legion from rules+DB",qTitle:"❓ Ask",targetLabel:"Target unit (optional)",candLabel:"Candidate general",newHint:"Not in DB — add via screenshots (①basic required · ②③ 1-2 each)",z1:"① Basic (stats)",z2:"② Skill detail",z3:"③ Weapon",qLabel:"Question",askBtn:"🔍 Analyze",qDefault:"Should I put this candidate into the target unit? If so, who to drop and how to build it?",guideTitle:"📷 Which screenshots?",g1t:"① Stats screen",g1d:"Name·5 stats·skill summary·weapon diamond (red=owned/black=none)",g2t:"② Skill detail",g2d:"Tap skill → detail (2 imgs if long)",g3t:"③ Weapon",g3d:"Equip icon/ⓘ → weapon name·effect (2 imgs if long)",g4t:"Current legion",g4d:"Set via class tabs + dropdowns above (general·weapon-owned)",guideHint:"If candidate is in DB, just pick the name (no screenshot). Else ① is required.",chatTitle:"💬 Coach & Chat",chatEmpty:"Press Analyze to start.",followLabel:"Follow-up (keeps context)",followPh:'e.g. "Why did you decide so?"',sendBtn:"Send",rulesTitle:"📖 Legion Rules",r1:"<b>Legion = 3 units</b>, <b>1 unit = 1 captain + 2 deputies</b> (9 total)",r2:"All <b>3 units share one class</b> for synergy (class set by captain)",r3:"<b>Captain-only generals can't be deputies</b> (deputy slot = balanced type)",r4:"Deputies fit any class but their <b>skill suits a specific class better</b>",r5:"<b>Judge a deputy's class fit by the unit captain's skill</b> (e.g. rout captain→rout-boost deputy)",r6:"<b>Weapon synergy</b> matters, esp. <b>whole-legion buff</b> weapons",dbTitle:"📋 General DB",dbSearchPh:"Search name·skill·weapon",roleAll:"All roles",jusang:"Captain",busang:"Deputy",byAll:"All classes",sortNo:"By No.",c기병:"Cavalry",c총포:"Gun",c창병:"Spear",c닌자:"Ninja",thinking:"Gemini thinking...",translating:"Translating DB...",thName:"Name",thType:"Type",thSkill:"Skill",thWeapon:"Weapon",thOwn:"Owned",thNote:"Battle",own:"weapon",yes:"yes",no:"no",selCand:"— Pick candidate —",addNew:"➕ Not listed — add via screenshots",tAll:"(No target — consider all)",reqPick:"Pick a candidate or choose 'Not listed' and upload screenshots.",reqBasic:"Upload the new general's basic (stats) screenshot.",addedTo:"➕ Added to DB: ",noRead:"Couldn't read new general; judging by image.",optReq:"🎯 Optimal legion request",analReq:"Analysis · candidate: "},
+ zh:{appTitle:"⚔️ 信长编队教练",appSub:"上传武将截图→Gemini给出编队建议·未收录自动添加·内置59名武将",setTitle:"⚙️ 设置",langLabel:"语言",themeLabel:"主题",modelLabel:"模型",thAuto:"自动",thDark:"深色",thLight:"浅色",thSepia:"棕褐",thBlue:"蓝色",ocrLabel:"🔎 OCR辅助识别",autoaddLabel:"➕ 自动添加新武将",keyNote:"已内置Gemini密钥·仅需选模型",legTitle:"🛡️ 当前编队",legHint:"选择兵种标签·武将/专武自动保存",resetBtn:"重置为推荐编队",optTitle:"🎯 AI最佳编队推荐",byLabel:"兵种",optBtn:"推荐该兵种军团",optHint:"依据规则+数据库提出9人(3部队)编队",qTitle:"❓ 提问",targetLabel:"目标部队(可选)",candLabel:"替换(新增)候选武将",newHint:"数据库中没有—用截图添加(①基础必填·②③各1~2张)",z1:"① 基础(属性)",z2:"② 技能详情",z3:"③ 专属武器",qLabel:"问题",askBtn:"🔍 分析",qDefault:"这名候选武将适合放进上面的目标部队吗？如果放，替换谁、如何搭配？",guideTitle:"📷 需要哪些截图？",g1t:"① 属性画面",g1d:"姓名·5项属性·技能概要·专武菱形(红=拥有/黑=无)",g2t:"② 技能详情",g2d:"点击技能→详情(长则2张)",g3t:"③ 专属武器",g3d:"装备图标/ⓘ→武器名·效果(长则2张)",g4t:"当前军团",g4d:"用上方兵种标签+下拉框设定(武将·专武拥有)",guideHint:"候选在数据库中则只需选名字(无需截图)。否则①必填。",chatTitle:"💬 教练回答&对话",chatEmpty:"点击分析开始对话。",followLabel:"追加提问(保持上下文)",followPh:'例）"为什么这样判断？"',sendBtn:"发送",rulesTitle:"📖 军团编队规则",r1:"<b>军团=3部队</b>，<b>1部队=1主将+2副将</b>（共9名）",r2:"一个军团的<b>3部队须同兵种</b>才有协同（兵种由主将决定）",r3:"<b>主将专属武将不能当副将</b>（副将槽=统率型）",r4:"副将可入任意兵种，但其<b>技能更适合特定兵种</b>",r5:"<b>副将适配兵种看该部队主将的技能</b>（如：溃败主将→强化溃败副将）",r6:"<b>武器(专属装备)协同</b>重要，尤其<b>全军团增益</b>武器",dbTitle:"📋 武将数据库",dbSearchPh:"搜索 姓名·技能·武器",roleAll:"全部角色",jusang:"主将",busang:"副将",byAll:"全部兵种",sortNo:"按编号",c기병:"骑兵",c총포:"铁炮",c창병:"枪兵",c닌자:"忍者",thinking:"Gemini思考中...",translating:"正在翻译数据库...",thName:"姓名",thType:"类型",thSkill:"技能",thWeapon:"专属武器",thOwn:"拥有",thNote:"战报",own:"专武",yes:"有",no:"无",selCand:"— 选择候选武将 —",addNew:"➕ 列表中没有—用截图添加",tAll:"(未指定目标—综合考虑)",reqPick:"请选择候选武将，或选“列表中没有”并上传截图。",reqBasic:"请上传新武将的基础(属性)截图。",addedTo:"➕ 已添加到数据库: ",noRead:"未能识别新武将，将按图片判断。",optReq:"🎯 最佳军团推荐请求",analReq:"分析请求 · 候选: "}
+};
+let lang=localStorage.getItem("nob_lang")||"ko";
+function t(k){return (UI[lang]&&UI[lang][k]!=null)?UI[lang][k]:(UI.ko[k]!=null?UI.ko[k]:k)}
+const LANGNAME={ko:"한국어",en:"English",zh:"简体中문".replace("문","文")};
+
+/* ===== 장수 데이터 번역 캐시 (Gemini) ===== */
+let TR={en:JSON.parse(localStorage.getItem("nob_tr_en")||"{}"),zh:JSON.parse(localStorage.getItem("nob_tr_zh")||"{}")};
+function dg(g,f){if(lang==="ko")return g[f];const o=TR[lang]&&TR[lang][g.번호];return (o&&o[f])?o[f]:g[f]}
+async function ensureTr(lg){if(lg==="ko")return;const miss=ALL().filter(g=>!TR[lg][g.번호]);if(!miss.length)return;const langN=lg==="en"?"English":"Simplified Chinese";const nameRule=lg==="en"?"standard historical romanization (e.g., Takeda Shingen, Sanada Yukimura)":"standard Chinese characters (e.g., 武田信玄)";const schema={type:"ARRAY",items:{type:"OBJECT",properties:{번호:{type:"NUMBER"},이름:{type:"STRING"},스킬:{type:"STRING"},스킬효과:{type:"STRING"},무기:{type:"STRING"},무기효과:{type:"STRING"},전보:{type:"STRING"}},required:["번호"]}};const src=miss.map(g=>`${g.번호}||${g.이름}||${g.스킬}||${g.스킬효과}||${g.무기}||${g.무기효과}||${g.전보}`).join("\n");const prompt=`Translate these 'Nobunaga's Ambition' mobile-game general entries to ${langN}. Names use ${nameRule}. Translate skill/weapon names and effect texts naturally as game text (keep it concise). Return a JSON array; for each line output 번호 and the translated 이름,스킬,스킬효과,무기,무기효과,전보 (if a field is empty keep empty). Lines are '번호||이름||스킬||스킬효과||무기||무기효과||전보':\n${src}`;const arr=JSON.parse(await gemini(modelEl.value,[{role:"user",parts:[{text:prompt}]}],schema));arr.forEach(o=>{if(o.번호!=null)TR[lg][o.번호]=o});localStorage.setItem("nob_tr_"+lg,JSON.stringify(TR[lg]))}
+
+/* 사용자 추가 장수 */
+let userDB=JSON.parse(localStorage.getItem("nob_userdb")||"[]");
+function ALL(){return BASE_G.concat(userDB)}
+function hasWeapon(g){return (g.무기&&g.무기!=="없음"&&g.무기!=="")?"보유":"없음"}
+function findGen(name){return ALL().find(g=>g.이름===name)}
+let legions=JSON.parse(localStorage.getItem("nob_legions")||"null")||structuredClone(DEFAULT_LEGIONS);
+legions.forEach(L=>{if(!L.own)L.own=L.units.map(u=>u.map(n=>{const g=findGen(n);return !!(g&&hasWeapon(g)==="보유")}))});
+let curLeg=0;
+const shots={기본:[],스킬:[],전무:[]};
+
+/* ===== 편성 렌더 ===== */
+function optionList(f,sel){return ALL().filter(f).map(g=>`<option value="${g.이름}" ${g.이름===sel?"selected":""}>${dg(g,"이름")} (${g.통솔}/${g.무용}/${g.지략})</option>`).join("")}
+function saveLeg(){localStorage.setItem("nob_legions",JSON.stringify(legions))}
+function legName(L){return BYICON[L.병종]+" "+t("c"+L.병종)}
+function renderLegions(){const tb=document.getElementById("legTabs");tb.innerHTML=legions.map((L,i)=>`<button class="legtab ${i===curLeg?'on':''}" data-i="${i}">${legName(L)}</button>`).join("");tb.querySelectorAll(".legtab").forEach(b=>b.addEventListener("click",e=>{curLeg=+e.currentTarget.dataset.i;renderLegions()}));const L=legions[curLeg],li=curLeg,el=document.getElementById("legions");el.innerHTML=`<div class="legion"><div class="legion-title">${legName(L)} <span class="pill p-${L.병종}">${t("c"+L.병종)}</span></div><div class="units">${L.units.map((u,ui)=>`<div class="unit"><div class="u-label">${ui+1}</div>${[0,1,2].map(si=>`<div class="slot"><select class="${si===0?'jusang':''}" data-u="${ui}" data-s="${si}">${optionList(si===0?(g=>g.역할==="주장"&&g.병종===L.병종):(g=>g.역할==="부장"),u[si])}</select><label class="ownchk"><input type="checkbox" data-u="${ui}" data-s="${si}" ${L.own[ui][si]?"checked":""}> ${t("own")}</label></div>`).join("")}</div>`).join("")}</div></div>`;el.querySelectorAll("select").forEach(s=>s.addEventListener("change",e=>{const u=+e.target.dataset.u,si=+e.target.dataset.s;legions[li].units[u][si]=e.target.value;legions[li].own[u][si]=hasWeapon(findGen(e.target.value))==="보유";saveLeg();renderLegions();renderTargets()}));el.querySelectorAll(".ownchk input").forEach(c=>c.addEventListener("change",e=>{const u=+e.target.dataset.u,si=+e.target.dataset.s;legions[li].own[u][si]=e.target.checked;saveLeg()}));renderTargets()}
+function renderTargets(){const el=document.getElementById("target");const cur=el.value;let h=`<option value="">${t("tAll")}</option>`;legions.forEach((L,li)=>L.units.forEach((u,ui)=>{h+=`<option value="${li}-${ui}">${legName(L)} ${ui+1} : ${u.map(n=>{const g=findGen(n);return g?dg(g,"이름"):n}).join(" / ")}</option>`}));el.innerHTML=h;if(cur)el.value=cur}
+
+/* ===== 카테고리 스샷 + 후보 ===== */
+const CATS=["기본","스킬","전무"];
+function wireZone(cat){const dz=document.getElementById("dz-"+cat),fi=document.getElementById("fi-"+cat);dz.addEventListener("click",()=>fi.click());["dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("over")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("over")}));dz.addEventListener("drop",e=>{[...e.dataTransfer.files].forEach(f=>addShot(cat,f))});fi.addEventListener("change",e=>{[...e.target.files].forEach(f=>addShot(cat,f));fi.value=""})}
+function addShot(cat,f){if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{shots[cat].push({data:r.result.split(",")[1],mime:f.type||"image/jpeg",url:r.result});renderShots()};r.readAsDataURL(f)}
+function renderShots(){CATS.forEach(cat=>{const el=document.getElementById("th-"+cat);el.innerHTML=shots[cat].map((im,i)=>`<div class="thumb"><img src="${im.url}"><div class="x" data-c="${cat}" data-i="${i}">✕</div></div>`).join("");el.querySelectorAll(".x").forEach(x=>x.addEventListener("click",e=>{shots[e.target.dataset.c].splice(+e.target.dataset.i,1);renderShots()})})}
+CATS.forEach(wireZone);
+function allShots(){return shots.기본.concat(shots.스킬,shots.전무)}
+const candEl=document.getElementById("cand");
+function fillCand(){const cur=candEl.value;candEl.innerHTML=`<option value="">${t("selCand")}</option>`+ALL().map(g=>`<option value="${g.이름}">${dg(g,"이름")} (${t(g.역할==="주장"?"jusang":"busang")}${g.병종?"·"+t("c"+g.병종):""})</option>`).join("")+`<option value="__new__">${t("addNew")}</option>`;if(cur)candEl.value=cur}
+candEl.addEventListener("change",()=>{document.getElementById("newGenBox").style.display=candEl.value==="__new__"?"block":"none"});
+
+/* ===== 설정 ===== */
+const GEMINI_KEY=atob("UWVubHM1RVlfWnRDclJjNV9DOUhoVmVBRUtLVTVpWGFrYkpWT1l1QUdqQkk2TlI4YkEuUUE=").split("").reverse().join("");
+const modelEl=document.getElementById("model"),ocrEl=document.getElementById("ocr"),autoaddEl=document.getElementById("autoadd");
+modelEl.value=localStorage.getItem("nob_model")||"gemini-flash-latest";
+modelEl.addEventListener("change",()=>localStorage.setItem("nob_model",modelEl.value));
+document.getElementById("resetBtn").addEventListener("click",()=>{legions=structuredClone(DEFAULT_LEGIONS);legions.forEach(L=>{L.own=L.units.map(u=>u.map(n=>{const g=findGen(n);return !!(g&&hasWeapon(g)==="보유")}))});saveLeg();renderLegions()});
+
+/* ===== 테마 ===== */
+const themeSel=document.getElementById("themeSel");
+function applyTheme(name){if(name==="auto")document.documentElement.removeAttribute("data-theme");else document.documentElement.setAttribute("data-theme",name);localStorage.setItem("nob_theme",name);themeSel.value=name}
+themeSel.addEventListener("change",()=>applyTheme(themeSel.value));
+
+/* ===== 언어 적용 ===== */
+const langSel=document.getElementById("langSel");
+function applyUI(){document.querySelectorAll("[data-i18n]").forEach(e=>{e.innerHTML=t(e.getAttribute("data-i18n"))});document.querySelectorAll("[data-i18n-ph]").forEach(e=>{e.placeholder=t(e.getAttribute("data-i18n-ph"))});document.documentElement.lang=lang;document.title=t("appTitle");const qEl=document.getElementById("q");if(!qEl.value||qEl.dataset.def==="1"){qEl.value=t("qDefault");qEl.dataset.def="1"}document.getElementById("followInput").placeholder=t("followPh");if(!uiTurns.length)document.getElementById("chat").innerHTML=`<span class="hint">${t("chatEmpty")}</span>`}
+async function applyLang(lg){lang=lg;localStorage.setItem("nob_lang",lg);langSel.value=lg;applyUI();if(lg!=="ko"){const note=document.getElementById("addNote");const busy=`<span class="spinner"></span>${t("translating")}`;document.getElementById("dbCount").textContent="…";try{await ensureTr(lg)}catch(e){}}renderLegions();renderDB();fillCand()}
+langSel.addEventListener("change",()=>applyLang(langSel.value));
+
+/* ===== 프롬프트 ===== */
+function dbLines(){return ALL().map(g=>`${g.번호}.${g.이름}|${g.역할}${g.병종?"·"+g.병종:""}|통${g.통솔}무${g.무용}지${g.지략}속${g.속도}정${g.정치}|${g.스킬}(${g.스킬효과})|무기:${g.무기||"없음"}${g.무기효과?"("+g.무기효과+")":""}${g.전보?"|전보:"+g.전보:""}`).join("\n")}
+function ownTxt(L,ui,si){return (L.own&&L.own[ui]&&L.own[ui][si])?"[전무보유]":"[전무없음]"}
+function compText(){return legions.map(L=>`${L.병종}군단\n`+L.units.map((u,ui)=>`  ${ui+1}부대: 주장 ${u[0]}${ownTxt(L,ui,0)} / ${u[1]}${ownTxt(L,ui,1)} / ${u[2]}${ownTxt(L,ui,2)}`).join("\n")).join("\n")}
+const RULES=`[편성 규칙]\n- 군단=3부대, 부대=주장1+부장2(총9명). 3부대는 같은 병종(주장이 결정).\n- 주장 전용은 부장불가. 부장은 통재형만.\n- 부장은 주장 스킬 테마에 맞을수록 시너지(패주주장→패주강화, 작열주장→작열강화, 무용딜주장→무용딜증폭).\n- 무기(전용장비) 시너지, 특히 군단전체버프 무기 고가치.\n- 전보=실전관측(표본적음).`;
+function answerLang(){return `\n[중요] 반드시 ${LANGNAME[lang]}(으)로 답변하세요.`}
+function buildAdvicePrompt(){const ts=document.getElementById("target").value;let tt="(미지정)";if(ts){const[li,ui]=ts.split("-").map(Number);tt=`${legions[li].병종}군단 ${ui+1}부대 (현재: ${legions[li].units[ui].join(" / ")})`}const q=document.getElementById("q").value.trim();const cand=candEl.value;let candTxt;if(cand==="__new__")candTxt="첨부 스크린샷의 신규 장수. 이미지에서 확인.";else if(cand){const g=findGen(cand);candTxt=g?`${g.이름} (${g.역할}${g.병종?"·"+g.병종:""}, 통${g.통솔}무${g.무용}지${g.지략}속${g.속도}정${g.정치}, 스킬:${g.스킬}(${g.스킬효과}), 무기:${g.무기}[${hasWeapon(g)}])`:cand}else candTxt="(미지정)";let ocrTxt=window._ocrText?`\n[OCR 보조]\n${window._ocrText}`:"";return `당신은 '신 노부나가의 야망' 편성 전문 코치입니다. 근거있게 조언.\n${RULES}\n[전체 DB]\n${dbLines()}\n[현재 편성(전무보유 표기)]\n${compText()}\n[질문 대상 부대] ${tt}\n[교체(추가) 후보] ${candTxt}\n[질문] ${q||"(후보를 대상부대에 넣을지 판단·구성조언)"}${ocrTxt}\n순서: 1.후보 확정 2.투입판단(넣는다/안넣는다 명확히, 근거:병종적합·주장스킬시너지·무기·스탯·전보·전무보유) 3.구성제안(넣으면 누구빼고 최종3인, 안넣으면 대안). 마크다운.${answerLang()}`}
+
+/* ===== Gemini ===== */
+async function gemini(model,contents,jsonSchema){const body={contents,generationConfig:{temperature:0.4,maxOutputTokens:jsonSchema?4096:2048}};if(jsonSchema){body.generationConfig.responseMimeType="application/json";body.generationConfig.responseSchema=jsonSchema}const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(GEMINI_KEY)}`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const data=await res.json();if(!res.ok)throw new Error((data.error&&data.error.message)||("HTTP "+res.status));return data.candidates?.[0]?.content?.parts?.map(p=>p.text).join("")||""}
+function imgParts(){return allShots().map(im=>({inline_data:{mime_type:im.mime,data:im.data}}))}
+const GEN_SCHEMA={type:"ARRAY",items:{type:"OBJECT",properties:{이름:{type:"STRING"},역할:{type:"STRING"},특성:{type:"STRING"},병종:{type:"STRING"},통솔:{type:"NUMBER"},무용:{type:"NUMBER"},지략:{type:"NUMBER"},속도:{type:"NUMBER"},정치:{type:"NUMBER"},스킬:{type:"STRING"},스킬효과:{type:"STRING"},무기:{type:"STRING"},무기효과:{type:"STRING"},무기보유:{type:"STRING"}},required:["이름","역할"]}};
+async function extractAndAdd(model){const prompt=`다음 이미지들은 '신 노부나가의 야망' 장수 정보 화면입니다. 각 장수를 JSON배열로: 이름,역할(주장/부장),특성(무용/지략/통재),병종(주장이면 기병/총포/창병/닌자,부장이면 빈문자),통솔/무용/지략/속도/정치(숫자),스킬,스킬효과,무기(없으면'없음'),무기효과,무기보유(마름모 빨강=보유/검정=없음). 같은 장수면 합치세요. (한국어로 값 작성)`;const contents=[{role:"user",parts:[{text:prompt},...imgParts()]}];let arr;try{arr=JSON.parse(await gemini(model,contents,GEN_SCHEMA))}catch(e){return[]}if(!Array.isArray(arr))return[];const added=[];arr.forEach(g=>{if(!g.이름||findGen(g.이름))return;userDB.push({번호:1000+userDB.length,이름:g.이름,역할:g.역할==="주장"?"주장":"부장",특성:g.특성||"통재",병종:g.역할==="주장"?(g.병종||""):"",통솔:+g.통솔||0,무용:+g.무용||0,지략:+g.지략||0,속도:+g.속도||0,정치:+g.정치||0,스킬:g.스킬||"",스킬효과:g.스킬효과||"",무기:(g.무기&&g.무기!=="없음")?g.무기:"없음",무기효과:g.무기효과||"",전보:"",출처:"user",무기보유:g.무기보유||""});added.push(g.이름)});if(added.length){localStorage.setItem("nob_userdb",JSON.stringify(userDB));renderLegions();renderDB()}return added}
+async function runOCR(){const shs=allShots();if(!ocrEl.checked||!shs.length||!window.Tesseract){window._ocrText="";return}try{let out=[];for(const im of shs){const{data}=await Tesseract.recognize(im.url,"kor+eng");out.push(data.text.replace(/\s+/g," ").trim())}window._ocrText=out.join(" || ")}catch(e){window._ocrText=""}}
+
+/* ===== 대화 ===== */
+let history=[],uiTurns=[];const chatEl=document.getElementById("chat");
+function render(md){let h=window.marked?marked.parse(md):md.replace(/\n/g,"<br>");return window.DOMPurify?DOMPurify.sanitize(h):h}
+function renderChat(){if(!uiTurns.length){chatEl.innerHTML=`<span class="hint">${t("chatEmpty")}</span>`;return}chatEl.innerHTML=uiTurns.map(x=>x.role==="user"?`<div class="bubble user">🙋 ${x.html}</div>`:`<div class="bubble ai">🧠 <div class="ai-body">${x.html}</div></div>`).join("");chatEl.scrollTop=chatEl.scrollHeight}
+async function turn(btnId){const btn=document.getElementById(btnId);btn.disabled=true;uiTurns.push({role:"model",html:`<span class="spinner"></span>${t("thinking")}`});renderChat();let ok=false;try{const txt=await gemini(modelEl.value,history);history.push({role:"model",parts:[{text:txt}]});uiTurns[uiTurns.length-1]={role:"model",html:render(txt)};ok=true}catch(e){history.pop();uiTurns[uiTurns.length-1]={role:"model",html:`<span style="color:var(--red)">오류: ${e.message}</span>`}}renderChat();btn.disabled=false;return ok}
+async function runAnalysis(){const cand=candEl.value,isNew=cand==="__new__";if(!cand)return alert(t("reqPick"));if(isNew&&!allShots().length)return alert(t("reqBasic"));const model=modelEl.value,btn=document.getElementById("askBtn"),addNote=document.getElementById("addNote");addNote.innerHTML="";
+  if(isNew&&ocrEl.checked&&allShots().length){btn.disabled=true;addNote.innerHTML='<span class="spinner"></span>OCR...';await runOCR();addNote.innerHTML=""}
+  if(isNew&&autoaddEl.checked&&allShots().length){btn.disabled=true;addNote.innerHTML='<span class="spinner"></span>…';const added=await extractAndAdd(model);if(added.length){fillCand();candEl.value=added[0]}addNote.innerHTML=added.length?`<span class="note">${t("addedTo")}${added.join(", ")}</span>`:`<span class="hint">${t("noRead")}</span>`;btn.disabled=false}
+  history=[];uiTurns=[];const q=document.getElementById("q").value.trim();const parts=[{text:buildAdvicePrompt()}];if(isNew)parts.push(...imgParts());history.push({role:"user",parts});uiTurns.push({role:"user",html:`<b>${t("analReq")}${esc(candEl.value==="__new__"?"(new)":dg(findGen(candEl.value)||{이름:candEl.value},"이름"))}</b>${allShots().length?` · ${allShots().length}📷`:""}${q?"<br>"+esc(q):""}`});const ok=await turn("askBtn");if(ok)document.getElementById("followRow").style.display="block"}
+async function followUp(){const inp=document.getElementById("followInput"),q=inp.value.trim();if(!q)return;if(!history.length)return alert(t("reqPick"));history.push({role:"user",parts:[{text:q+answerLang()}]});uiTurns.push({role:"user",html:esc(q)});inp.value="";renderChat();await turn("followBtn")}
+async function optimize(){const by=document.getElementById("optBy").value;const prompt=`당신은 '신 노부나가의 야망' 편성 전문가입니다.\n${RULES}\n[전체 DB]\n${dbLines()}\n**${by} 병종 최적 군단(3부대×3=9명)**을 구성하세요. 3부대 모두 ${by} 주장. 주장전용 부장불가. 각 부대는 주장 스킬 테마에 맞는 부장. 무기 시너지 반영.\n출력: 부대별 표(부대|주장|부장1|부장2)+부대별 시너지 근거+총평. 마크다운.${answerLang()}`;history=[];uiTurns=[];history.push({role:"user",parts:[{text:prompt}]});uiTurns.push({role:"user",html:`<b>${t("optReq")} — ${t("c"+by)}</b>`});const ok=await turn("optBtn");if(ok)document.getElementById("followRow").style.display="block"}
+document.getElementById("askBtn").addEventListener("click",runAnalysis);
+document.getElementById("followBtn").addEventListener("click",followUp);
+document.getElementById("followInput").addEventListener("keydown",e=>{if(e.key==="Enter")followUp()});
+document.getElementById("optBtn").addEventListener("click",optimize);
+function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+
+/* ===== DB 조회 ===== */
+function renderDB(){const q=(document.getElementById("dbSearch").value||"").trim(),r=document.getElementById("dbRole").value,b=document.getElementById("dbByeong").value,sort=document.getElementById("dbSort").value;let rows=ALL().filter(g=>{if(r&&g.역할!==r)return false;if(b&&g.병종!==b)return false;if(q){const hay=[dg(g,"이름"),g.이름,dg(g,"스킬"),dg(g,"스킬효과"),dg(g,"무기"),dg(g,"무기효과")].join(" ");if(!hay.includes(q))return false}return true});if(sort==="번호")rows.sort((a,c)=>a.번호-c.번호);else rows.sort((a,c)=>c[sort]-a[sort]);document.getElementById("dbCount").textContent=ALL().length;const H=[t("thName"),t("thType"),"LDR","VAL","INT","SPD","POL",t("thSkill"),t("thWeapon"),t("thOwn"),t("thNote")];document.getElementById("dbTable").innerHTML=`<thead><tr><th>#</th>${H.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>`+rows.map(g=>{const own=g.무기보유||hasWeapon(g),wp=(!g.무기||g.무기==="없음");return `<tr><td>${g.번호}${g.출처?"*":""}</td><td><b>${dg(g,"이름")}</b></td><td>${t(g.역할==="주장"?"jusang":"busang")}${g.병종?"·"+t("c"+g.병종):""}<br><span class="muted">${g.특성}</span></td><td>${g.통솔}</td><td>${g.무용}</td><td>${g.지략}</td><td>${g.속도}</td><td>${g.정치}</td><td class="wrap"><b>${dg(g,"스킬")}</b><br><span class="muted">${esc(dg(g,"스킬효과"))}</span></td><td class="wrap">${wp?`<span class="muted">${t("no")}</span>`:"<b>"+esc(dg(g,"무기"))+"</b><br><span class=\"muted\">"+esc(dg(g,"무기효과"))+"</span>"}</td><td>${own==="보유"?`<span class="tagY">${t("yes")}</span>`:`<span class="tagN">${t("no")}</span>`}</td><td class="wrap"><span class="muted">${g.전보?esc(dg(g,"전보")):"-"}</span></td></tr>`}).join("")+`</tbody>`}
+["dbSearch","dbRole","dbByeong","dbSort"].forEach(id=>{const el=document.getElementById(id);el.addEventListener("input",renderDB);el.addEventListener("change",renderDB)});
+
+/* ===== 초기화 ===== */
+applyTheme(localStorage.getItem("nob_theme")||"auto");
+applyUI();renderLegions();renderDB();fillCand();
+if(lang!=="ko")applyLang(lang);
+</script>
+</body>
+</html>

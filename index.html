@@ -244,7 +244,7 @@ function renderTargets(){const el=document.getElementById("target");const cur=el
 const CATS=["기본","스킬","전무"];
 function wireZone(cat){const dz=document.getElementById("dz-"+cat),fi=document.getElementById("fi-"+cat);dz.addEventListener("click",()=>fi.click());["dragover"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add("over")}));["dragleave","drop"].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove("over")}));dz.addEventListener("drop",e=>{[...e.dataTransfer.files].forEach(f=>addShot(cat,f))});fi.addEventListener("change",e=>{[...e.target.files].forEach(f=>addShot(cat,f));fi.value=""})}
 function addShot(cat,f){if(!f||!f.type.startsWith("image/"))return;const r=new FileReader();r.onload=()=>{shots[cat].push({data:r.result.split(",")[1],mime:f.type||"image/jpeg",url:r.result});renderShots()};r.readAsDataURL(f)}
-function renderShots(){CATS.forEach(cat=>{const el=document.getElementById("th-"+cat);el.innerHTML=shots[cat].map((im,i)=>`<div class="thumb"><img src="${im.url}"><div class="x" data-c="${cat}" data-i="${i}">✕</div></div>`).join("");el.querySelectorAll(".x").forEach(x=>x.addEventListener("click",e=>{shots[e.target.dataset.c].splice(+e.target.dataset.i,1);renderShots()})})}
+function renderShots(){CATS.forEach(cat=>{const el=document.getElementById("th-"+cat);el.innerHTML=shots[cat].map((im,i)=>`<div class="thumb"><img src="${im.url}"><div class="x" data-c="${cat}" data-i="${i}">✕</div></div>`).join("");el.querySelectorAll(".x").forEach(x=>x.addEventListener("click",e=>{shots[e.target.dataset.c].splice(+e.target.dataset.i,1);renderShots()}))})}
 CATS.forEach(wireZone);
 function allShots(){return shots.기본.concat(shots.스킬,shots.전무)}
 const candEl=document.getElementById("cand");

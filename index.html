@@ -234,7 +234,8 @@ let curLeg=0;
 const shots={기본:[],스킬:[],전무:[]};
 
 /* ===== 편성 렌더 ===== */
-function optionList(f,sel){return ALL().filter(f).map(g=>`<option value="${g.이름}" ${g.이름===sel?"selected":""}>${dg(g,"이름")} (${g.통솔}/${g.무용}/${g.지략})</option>`).join("")}
+function byName(a,b){return dg(a,"이름").localeCompare(dg(b,"이름"),lang)}
+function optionList(f,sel){return ALL().filter(f).sort(byName).map(g=>`<option value="${g.이름}" ${g.이름===sel?"selected":""}>${dg(g,"이름")} (${g.통솔}/${g.무용}/${g.지략})</option>`).join("")}
 function saveLeg(){localStorage.setItem("nob_legions",JSON.stringify(legions))}
 function legName(L){return BYICON[L.병종]+" "+t("c"+L.병종)}
 function renderLegions(){const tb=document.getElementById("legTabs");tb.innerHTML=legions.map((L,i)=>`<button class="legtab ${i===curLeg?'on':''}" data-i="${i}">${legName(L)}</button>`).join("");tb.querySelectorAll(".legtab").forEach(b=>b.addEventListener("click",e=>{curLeg=+e.currentTarget.dataset.i;renderLegions()}));const L=legions[curLeg],li=curLeg,el=document.getElementById("legions");el.innerHTML=`<div class="legion"><div class="legion-title">${legName(L)} <span class="pill p-${L.병종}">${t("c"+L.병종)}</span></div><div class="units">${L.units.map((u,ui)=>`<div class="unit"><div class="u-label">${ui+1}</div>${[0,1,2].map(si=>`<div class="slot"><select class="${si===0?'jusang':''}" data-u="${ui}" data-s="${si}">${optionList(si===0?(g=>g.역할==="주장"&&g.병종===L.병종):(g=>g.역할==="부장"),u[si])}</select><label class="ownchk"><input type="checkbox" data-u="${ui}" data-s="${si}" ${L.own[ui][si]?"checked":""}> ${t("own")}</label></div>`).join("")}</div>`).join("")}</div></div>`;el.querySelectorAll("select").forEach(s=>s.addEventListener("change",e=>{const u=+e.target.dataset.u,si=+e.target.dataset.s;legions[li].units[u][si]=e.target.value;legions[li].own[u][si]=hasWeapon(findGen(e.target.value))==="보유";saveLeg();renderLegions();renderTargets()}));el.querySelectorAll(".ownchk input").forEach(c=>c.addEventListener("change",e=>{const u=+e.target.dataset.u,si=+e.target.dataset.s;legions[li].own[u][si]=e.target.checked;saveLeg()}));renderTargets()}
@@ -248,7 +249,7 @@ function renderShots(){CATS.forEach(cat=>{const el=document.getElementById("th-"
 CATS.forEach(wireZone);
 function allShots(){return shots.기본.concat(shots.스킬,shots.전무)}
 const candEl=document.getElementById("cand");
-function fillCand(){const cur=candEl.value;candEl.innerHTML=`<option value="">${t("selCand")}</option>`+ALL().map(g=>`<option value="${g.이름}">${dg(g,"이름")} (${t(g.역할==="주장"?"jusang":"busang")}${g.병종?"·"+t("c"+g.병종):""})</option>`).join("")+`<option value="__new__">${t("addNew")}</option>`;if(cur)candEl.value=cur}
+function fillCand(){const cur=candEl.value;candEl.innerHTML=`<option value="">${t("selCand")}</option>`+ALL().slice().sort(byName).map(g=>`<option value="${g.이름}">${dg(g,"이름")} (${t(g.역할==="주장"?"jusang":"busang")}${g.병종?"·"+t("c"+g.병종):""})</option>`).join("")+`<option value="__new__">${t("addNew")}</option>`;if(cur)candEl.value=cur}
 candEl.addEventListener("change",()=>{document.getElementById("newGenBox").style.display=candEl.value==="__new__"?"block":"none"});
 
 /* ===== 설정 ===== */

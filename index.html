@@ -253,7 +253,7 @@ function fillCand(){const cur=candEl.value;candEl.innerHTML=`<option value="">${
 candEl.addEventListener("change",()=>{const v=candEl.value;document.getElementById("newGenBox").style.display=v==="__new__"?"block":"none";const chk=document.getElementById("candOwn"),g=(v&&v!=="__new__")?findGen(v):null;if(g&&hasWeapon(g)==="보유"){chk.disabled=false;chk.checked=true}else{chk.disabled=true;chk.checked=false}});
 
 /* ===== 설정 ===== */
-const KEYS=["UWVubHM1RVlfWnRDclJjNV9DOUhoVmVBRUtLVTVpWGFrYkpWT1l1QUdqQkk2TlI4YkEuUUE=","UXFZU2NTdFE4aDVKa2RqcEFYamtJOTZxTlFTbXREclNpeVRnZUtCZElhQ0s2TlI4YkEuUUE="].map(b=>atob(b).split("").reverse().join(""));
+const KEYS=["UWVubHM1RVlfWnRDclJjNV9DOUhoVmVBRUtLVTVpWGFrYkpWT1l1QUdqQkk2TlI4YkEuUUE=","UXFZU2NTdFE4aDVKa2RqcEFYamtJOTZxTlFTbXREclNpeVRnZUtCZElhQ0s2TlI4YkEuUUE=","QUNJdW11X291bGxXbzVTQnlwZTYyLTVyWFBsWWhSWE5xM0owcnpKZjNPZkw2TlI4YkEuUUE="].map(b=>atob(b).split("").reverse().join(""));
 let keyIdx=0;
 const modelEl=document.getElementById("model"),ocrEl=document.getElementById("ocr"),autoaddEl=document.getElementById("autoadd");
 if(localStorage.getItem("nob_model")==="gemini-flash-latest")localStorage.removeItem("nob_model");

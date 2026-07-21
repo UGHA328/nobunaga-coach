@@ -279,15 +279,10 @@ document.getElementById("regBtn").addEventListener("click",registerGeneral);
 /* ===== 설정 ===== */
 const GROQ_TEXT="llama-3.3-70b-versatile",GROQ_VISION="meta-llama/llama-4-scout-17b-16e-instruct";
 /* API 우선순위 체인: 제미나이#3 → 제미나이#2 → Groq#1 → Groq#2 (실패/한도/과부하 시 다음으로 자동 전환) */
-const PROVIDERS=[
- {t:"gemini",k:atob("QUNJdW11X291bGxXbzVTQnlwZTYyLTVyWFBsWWhSWE5xM0owcnpKZjNPZkw2TlI4YkEuUUE=").split("").reverse().join("")},
- {t:"gemini",k:atob("UXFZU2NTdFE4aDVKa2RqcEFYamtJOTZxTlFTbXREclNpeVRnZUtCZElhQ0s2TlI4YkEuUUE=").split("").reverse().join("")},
- {t:"groq",k:["gsk_GntMX8qgXbDu6TViTFjKWGdy","b3FYOvNIgavTRqjPz9CNjw7Zocyu"].join("")},
- {t:"groq",k:["gsk_aCMcwgLZoC6URngDPiOgWGdy","b3FYJoWkhsaztL96EWrFbl2EiKoP"].join("")}
-];
+const PROVIDERS=[]; /* 키는 서버(Vercel 프록시)에만 보관 — 클라이언트/깃허브엔 키 없음 */
 let provIdx=0;
 /* 프록시 URL 설정 시 키 없이 프록시만 호출(키 은닉). 비어있으면 아래 내장키 사용. */
-const PROXY_URL="";
+const PROXY_URL="https://nobunaga-proxy.vercel.app/api/llm";
 const modelEl=document.getElementById("model"),ocrEl=document.getElementById("ocr"),autoaddEl=document.getElementById("autoadd");
 if(!localStorage.getItem("nob_mig3")){localStorage.removeItem("nob_model");localStorage.setItem("nob_mig3","1")}
 modelEl.value=localStorage.getItem("nob_model")||"gemini-flash-lite-latest";

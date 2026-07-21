@@ -72,7 +72,7 @@
   <div class="row">
     <div><label data-i18n="langLabel"></label><select id="langSel"><option value="ko">한국어</option><option value="en">English</option><option value="zh">中文</option></select></div>
     <div><label data-i18n="themeLabel"></label><select id="themeSel"><option value="auto" data-i18n="thAuto"></option><option value="dark" data-i18n="thDark"></option><option value="light" data-i18n="thLight"></option><option value="sepia" data-i18n="thSepia"></option><option value="blue" data-i18n="thBlue"></option></select></div>
-    <div><label data-i18n="modelLabel"></label><select id="model"><option value="gemini-flash-lite-latest">Gemini Flash-Lite 최신 (한도 넉넉·추천)</option><option value="gemini-3.5-flash">Gemini 3.5 Flash</option><option value="gemini-flash-latest">Gemini Flash-latest</option><option value="gemini-pro-latest">Gemini Pro (정밀)</option><option value="groq">⚡ Groq Llama-3.3-70B (Gemini 붐빌 때)</option></select></div>
+    <div><label data-i18n="modelLabel"></label><select id="model"><option value="gemini-3.1-flash-lite">Gemini 3.1 Flash-Lite (무료 한도 최대·추천)</option><option value="gemini-3.5-flash">Gemini 3.5 Flash (더 정밀·하루 20건 제한)</option><option value="groq">⚡ Groq Llama-3.3-70B (Gemini 한도 초과 시)</option></select></div>
   </div>
   <div style="margin-top:8px;display:flex;gap:16px;flex-wrap:wrap">
     <label class="chk"><input type="checkbox" id="ocr"> <span data-i18n="ocrLabel"></span></label>
@@ -284,8 +284,9 @@ let provIdx=0;
 /* 프록시 URL 설정 시 키 없이 프록시만 호출(키 은닉). 비어있으면 아래 내장키 사용. */
 const PROXY_URL="https://nobunaga-proxy.vercel.app/api/llm";
 const modelEl=document.getElementById("model"),ocrEl=document.getElementById("ocr"),autoaddEl=document.getElementById("autoadd");
-if(!localStorage.getItem("nob_mig3")){localStorage.removeItem("nob_model");localStorage.setItem("nob_mig3","1")}
-modelEl.value=localStorage.getItem("nob_model")||"gemini-flash-lite-latest";
+if(!localStorage.getItem("nob_mig4")){localStorage.removeItem("nob_model");localStorage.setItem("nob_mig4","1")}
+modelEl.value=localStorage.getItem("nob_model")||"gemini-3.1-flash-lite";
+if(!["gemini-3.1-flash-lite","gemini-3.5-flash","groq"].includes(modelEl.value)){modelEl.value="gemini-3.1-flash-lite";localStorage.setItem("nob_model",modelEl.value)}
 modelEl.addEventListener("change",()=>localStorage.setItem("nob_model",modelEl.value));
 document.getElementById("resetBtn").addEventListener("click",()=>{legions=structuredClone(DEFAULT_LEGIONS);legions.forEach(L=>{L.own=L.units.map(u=>u.map(n=>{const g=findGen(n);return !!(g&&hasWeapon(g)==="보유")}));L.skinOwn=L.units.map(u=>u.map(()=>false))});saveLeg();renderLegions()});
 
